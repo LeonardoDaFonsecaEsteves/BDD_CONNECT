@@ -32,9 +32,9 @@ app.use((req, _, next) => {
   next();
 });
 
-app.get('/get', (req, res, next) => getMethod(req, res, next));
-app.put('/put', (req, res, next) => putMethod(req, res, next));
-app.post('/post', (req, res, next) => postMethod(req, res, next));
-app.delete('/delete', (req, res, next) => delMethod(req, res, next));
+app.get('/', (req, res, next) => getMethod(req, res, next));
+app.put('/', (req, res, next) => putMethod(req, res, next));
+app.post('/', (req, res, next) => postMethod(req, res, next));
+app.delete('/', (req, res, next) => delMethod(req, res, next));
 
 module.exports = app;

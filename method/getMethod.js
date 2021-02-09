@@ -9,17 +9,13 @@ const getMethod = (req, res, next) => {
       connect.query(req.param('query'), (err, result, fields) => {
         if (err) {
           response(res, 500, 'error', err);
-          next();
         }
         response(res, 200, '', result);
-        next();
       });
     } else {
       response(res, 500, 'error', 'Requete SQL Invalid');
-      next();
     }
     connect.end();
-    next();
   } else {
     response(
         res,
@@ -27,7 +23,6 @@ const getMethod = (req, res, next) => {
         'error',
         `Aucune config pour ${bddConfig[req.param('bdd')]}`,
     );
-    next();
   }
 };
 
