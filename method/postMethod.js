@@ -1,3 +1,5 @@
+const bddConfig = require('../config/config');
+const bddConnect = require('../mysql/connect');
 const response = require('../response/response');
 
 const postMethod = (req, res, next) => {
