@@ -1,7 +1,7 @@
 //* ********************************************
 // connection to mySQL
 const mysql = require('mysql');
-const logger = require('./logs/logger.js');
+const logger = require('../logs/logger.js');
 const bddConnect = (config) => {
   const connection = mysql.createConnection({...config});
 
