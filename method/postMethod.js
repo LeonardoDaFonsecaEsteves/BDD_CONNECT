@@ -1,7 +1,27 @@
 const response = require('../response/response');
 
 const postMethod = (req, res, next) => {
-  response(res, 500, 'error', 'Not Function');
+  if (!!bddConfig[req.param('bdd')]) {
+    const connect = bddConnect(bddConfig[req.param('bdd')]);
+    if (!!req.param('query')) {
+      connect.query(req.param('query'), (err, result, fields) => {
+        if (err) {
+          response(res, 500, 'error', err);
+        }
+        response(res, 200, '', result);
+      });
+    } else {
+      response(res, 500, 'error', 'Requete SQL Invalid');
+    }
+    connect.end();
+  } else {
+    response(
+        res,
+        500,
+        'error',
+        `Aucune config pour ${bddConfig[req.param('bdd')]}`,
+    );
+  }
 };
 
 module.exports = postMethod;
