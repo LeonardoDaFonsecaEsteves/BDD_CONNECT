@@ -1,68 +1,23 @@
-const bddConfig = require('./config.js');
-const bddConnection = require('./connect.js');
-const express = require('express');
-const app = express();
-const port = 3000;
-const bodyParser = require('body-parser');
-const logger = require('./logs/logger.js');
+require('./config/main');
+const http = require('http');
+const app = require('./app/app');
+const logger = require('./logs/logger');
+const errorHandler = require('./utils/errorHandler');
+const normalizePort = require('./utils/normalizePort');
 
-app.use((_, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-      'Access-Control-Allow-HeBBD_CONNECT/nodaders',
-      'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization',
-  );
-  res.setHeader(
-      'Access-Control-Allow-Methods',
-      'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-  );
-  next();
+const port = normalizePort(process.env.HTTP_PORT);
+
+app.set('port', port);
+
+const server = http.createServer(app);
+
+server.on('error', errorHandler);
+
+server.on('listening', () => {
+  const address = server.address();
+  const bind =
+        typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
+  logger.info('Bdd_Connect Listening on ' + bind);
 });
 
-app.use(bodyParser.json());
-app.use(
-    bodyParser.urlencoded({
-      extended: true,
-    }),
-);
-
-app.use((req, _, next) => {
-  logger.info(`  ${req.originalUrl} - ${req.method}`);
-  next();
-});
-
-app.all('/', (req, res) => {
-  if (!!bddConfig[req.param('bdd')]) {
-    const connect = bddConnection(BDD_CONFIG[req.param('bdd')]);
-    if (!!req.param('query')) {
-      connect.query(req.param('query'), (err, result, fields) => {
-        if (err) {
-          logger.error(err);
-          res.json({
-            level: 'error',
-            message: err,
-          });
-        }
-        logger.info(JSON.stringify(result));
-        res.json({...result});
-      });
-    } else {
-      logger.error('Requete SQL Invalid');
-      res.json({
-        level: 'error',
-        message: 'Requete SQL Invalid',
-      });
-    }
-    connect.end();
-  } else {
-    logger.error(`Aucune config pour ${bddConfig[req.param('bdd')]}`);
-    res.json({
-      level: 'error',
-      message: `Aucune config pour ${bddConfig[req.param('bdd')]}`,
-    });
-  }
-});
-
-app.listen(port, () => {
-  logger.info('BDD_CONNECTING RUN ');
-});
+server.listen(port);

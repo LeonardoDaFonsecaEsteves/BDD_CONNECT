@@ -1,13 +1,13 @@
 //* ********************************************
 // connection to mySQL
 const mysql = require('mysql');
-
+const logger = require('./logs/logger.js');
 const bddConnect = (config) => {
   const connection = mysql.createConnection({...config});
 
   connection.connect((error) => {
     if (error) {
-      console.log('connection to MySQL failed');
+      logger.error('connection to MySQL failed');
       throw error;
     }
   });

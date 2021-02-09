@@ -11,6 +11,6 @@ module.exports = {
   rules: {
     'quotes': ['error', 'single'],
     // windows linebreaks when not in production environment
-    'linebreak-style': ['error', true ? 'unix' : 'windows'],
+    'linebreak-style': ['error', false ? 'unix' : 'windows'],
   },
 };
