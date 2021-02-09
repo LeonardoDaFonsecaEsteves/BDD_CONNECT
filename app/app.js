@@ -2,10 +2,10 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const logger = require('../logs/logger');
-const get = require('../method/get');
-const put = require('../method/put');
-const post = require('../method/post');
-const del = require('../method/delete');
+const getMethod = require('../method/getMethod');
+const postMethod = require('../method/postMethod');
+const putMethod = require('../method/putMethod');
+const delMethod = require('../method/delMethod');
 
 app.use((_, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -32,18 +32,9 @@ app.use((req, _, next) => {
   next();
 });
 
-/**
- * get bdd result
- */
-
-app.route('/')
-    .get((req, res, next) => get(req, res, next))
-    .put((req, res, next) => put(req, res, next))
-    .post((req, res, next) => post(req, res, next))
-    .delete((req, res, next) => del(req, res, next));
-
-/**
- * update bdd
- */
+app.get('/get', (req, res, next) => getMethod(req, res, next));
+app.put('/put', (req, res, next) => putMethod(req, res, next));
+app.post('/post', (req, res, next) => postMethod(req, res, next));
+app.delete('/delete', (req, res, next) => delMethod(req, res, next));
 
 module.exports = app;

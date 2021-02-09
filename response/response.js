@@ -11,7 +11,7 @@ const response = (res, status, type, resulte) => {
       break;
     default:
       logger.info(
-          `status: ${status}, resulte: ${JSON.stringify(result)}  `,
+          `status: ${status}, resulte: ${JSON.stringify(resulte)}  `,
       );
       res.status(status).json({...resulte});
       break;

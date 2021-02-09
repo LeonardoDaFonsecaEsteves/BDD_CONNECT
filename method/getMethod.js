@@ -2,7 +2,7 @@ const bddConfig = require('../config/config');
 const bddConnect = require('../mysql/connect');
 const response = require('../response/response');
 
-const get = (req, res, next) => {
+const getMethod = (req, res, next) => {
   if (!!bddConfig[req.param('bdd')]) {
     const connect = bddConnect(bddConfig[req.param('bdd')]);
     if (!!req.param('query')) {
@@ -31,4 +31,4 @@ const get = (req, res, next) => {
   }
 };
 
-module.exports = get;
+module.exports = getMethod;
