@@ -1,29 +1,22 @@
-const bddConfig = require('../config/config');
-const bddConnect = require('../mysql/connect');
 const response = require('../response/response');
 
-const postMethod = (req, res, next) => {
-  if (!!bddConfig[req.param('bdd')]) {
-    const connect = bddConnect(bddConfig[req.param('bdd')]);
-    if (!!req.param('query')) {
-      connect.query(req.param('query'), (err, result, fields) => {
-        if (err) {
-          response(res, 500, 'error', err);
-        }
-        response(res, 200, '', result);
-      });
-    } else {
-      response(res, 500, 'error', 'Requete SQL Invalid');
+/**  
+ * Method d'insertion dans la base de donnée génerique 
+ * elle dois recevoir Keys = la signature de 
+ * Values : les valeur 
+ */
+const postMethod = (req, res, connect) => {
+  const { table } = req.query
+  const { Keys, Values } = req.body
+
+  const sql = `INSERT INTO ${table} (${Keys}) VALUES (${Values})`;
+  connect.query(sql, (err, result, fields) => {
+    if (err) {
+      response(res, 500, 'error', err);
     }
-    connect.end();
-  } else {
-    response(
-        res,
-        500,
-        'error',
-        `Aucune config pour ${bddConfig[req.param('bdd')]}`,
-    );
-  }
+    response(res, 200, '', result, fields);
+  });
+  connect.end();
 };
 
 module.exports = postMethod;

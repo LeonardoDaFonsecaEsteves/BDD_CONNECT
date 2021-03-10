@@ -1,29 +1,30 @@
-const bddConfig = require('../config/config');
-const bddConnect = require('../mysql/connect');
 const response = require('../response/response');
 
-const putMethod = (req, res, next) => {
-  if (!!bddConfig[req.param('bdd')]) {
-    const connect = bddConnect(bddConfig[req.param('bdd')]);
-    if (!!req.param('query')) {
-      connect.query(req.param('query'), (err, result, fields) => {
-        if (err) {
-          response(res, 500, 'error', err);
-        }
-        response(res, 200, '', result);
-      });
-    } else {
-      response(res, 500, 'error', 'Requete SQL Invalid');
+/**  
+ * Method de mise a jour dans la base de donnée génerique 
+ * elle dois recevoir un object update :{
+ *  key1 = "value",
+ *  key2 = "['val1', 'val2']"
+ *  key3 = "{'k1':'v1','k2':'['v2']'}"
+ *  key4 = 5
+ * }
+ */
+const putMethod = (req, res, connect) => {
+  const { table, query } = req.query
+  const { Keys, Values } = req.body
+
+  for(let i = 0 ; i < Keys.length; i++){
+    const sql = `UPDATE ${table} SET ${Keys[i]}=${JSON.stringify(Values[i])} WHERE ${query}`;
+      if (!!query) {
+        connect.query(sql, (err, result, fields) => {
+          if (err) {
+            response(res, 500, 'error', err);
+          }
+          response(res, 200, '', result, fields);
+        });
+      }
     }
     connect.end();
-  } else {
-    response(
-        res,
-        500,
-        'error',
-        `Aucune config pour ${bddConfig[req.param('bdd')]}`,
-    );
-  }
-};
+  };
 
 module.exports = putMethod;

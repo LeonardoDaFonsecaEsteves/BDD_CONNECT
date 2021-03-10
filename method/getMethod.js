@@ -1,29 +1,19 @@
-const bddConfig = require('../config/config');
-const bddConnect = require('../mysql/connect');
 const response = require('../response/response');
 
-const getMethod = (req, res, next) => {
-  if (!!bddConfig[req.param('bdd')]) {
-    const connect = bddConnect(bddConfig[req.param('bdd')]);
-    if (!!req.param('query')) {
-      connect.query(req.param('query'), (err, result, fields) => {
-        if (err) {
-          response(res, 500, 'error', err);
-        }
-        response(res, 200, '', result);
-      });
-    } else {
-      response(res, 500, 'error', 'Requete SQL Invalid');
+const getMethod = (req, res, connect) => {
+  const { table, query } = req.query
+  const sql = `SELECT * FROM ${table} ${query && ' WHERE ' + query}`;
+  connect.query(sql, (err, result, fields) => {
+    if (err) {
+      response(res, 500, 'error', err);
     }
-    connect.end();
-  } else {
-    response(
-        res,
-        500,
-        'error',
-        `Aucune config pour ${bddConfig[req.param('bdd')]}`,
-    );
-  }
+    if (result.length) {
+      response(res, 200, '', result, fields);
+    } else {
+      response(res, 204, '', 'no content')
+    }
+  });
+  connect.end();
 };
 
 module.exports = getMethod;

@@ -1,7 +1,7 @@
 const {ERROR_CONSTANT} = require('../constant/error.constant');
 const logger = require('../logs/logger');
 
-const errorHandler = (error) => {
+const errorHandler = (error, server, port) => {
   if (error.syscall !== 'listen') {
     throw error;
   }
